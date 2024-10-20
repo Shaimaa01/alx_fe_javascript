@@ -346,6 +346,10 @@ async function syncQuotes() { // Changed function name to syncQuotes
 
   // Update local storage or your application's state with merged quotes
   updateLocalQuotes(mergedQuotes);
+  
+  // Add the required console log statement
+  console.log("Quotes synced with server!"); // <-- Added line
+
   console.log("Quotes synced successfully:", mergedQuotes);
 }
 
@@ -357,4 +361,5 @@ function updateLocalQuotes(quotes) {
 
 // Example usage of posting a quote
 postQuoteToServer({ text: "This is a test quote.", category: "General" });
+
 
