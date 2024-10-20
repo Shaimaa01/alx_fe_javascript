@@ -16,6 +16,10 @@
       accept=".json"
       onchange="importFromJsonFile(event)"
     />
+    <select id="categoryFilter" onchange="filterQuotes()">
+      <option value="all">All Categories</option>
+      <!-- Dynamically populated categories -->
+    </select>
     <script src="script.js"></script>
   </body>
 </html>

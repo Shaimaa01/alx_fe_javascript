@@ -115,6 +115,9 @@ function addQuote() {
     // updata data in localstorage
     arrayOfChoosenQuotes.push(newQuoteObj);
     addDataToLocalStorage();
+    displaySavedQuotes(); // Refresh quotes display
+      // Update category dropdown if new category is introduced
+      populateCategories();
     // clear input
     newQuoteText.value = "";
     newQuoteCategory.value = "";
@@ -212,3 +215,69 @@ function importFromJsonFile(event) {
 
   fileReader.readAsText(event.target.files[0]);
 }
+
+// Populate Categories Dynamically:
+const categoryFilter = document.getElementById("categoryFilter");
+function populateCategories() {
+  const categories = new Set(quotes.map((quote) => quote.category));
+  categories.forEach((category) => {
+    let option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  });
+}
+populateCategories();
+
+//Filter Quotes Based on Selected Category
+function filterQuotes() {
+  if (categoryFilter.innerHTML == randomQuotes.category) {
+    return randomQuotes;
+  }
+}
+
+function filterQuotes() {
+  const selectedCategory = categoryFilter.value;
+  quoteDisplay.innerHTML = ""; // Clear previous quotes
+
+  const filteredQuotes = quotes.filter(
+    (quote) => selectedCategory === "all" || quote.category === selectedCategory
+  );
+
+  filteredQuotes.forEach((quote) => {
+    let all = document.createElement("div");
+    let text = document.createElement("p");
+    let category = document.createElement("p");
+
+    text.textContent = `Text: ${quote.text}`;
+    category.textContent = `Category: ${quote.category}`;
+
+    all.appendChild(text);
+    all.appendChild(category);
+    quoteDisplay.appendChild(all);
+  });
+    // Save the selected filter to local storage
+    localStorage.setItem("selectedCategory", selectedCategory);
+}
+
+
+// Populate Categories and Restore Last Selected Filter:
+function populateCategories() {
+  const categories = new Set(arrayOfChoosenQuotes.map((quote) => quote.category));
+  categoryFilter.innerHTML = '<option value="all">All Categories</option>'; // Reset dropdown
+
+  categories.forEach((category) => {
+    let option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  });
+
+  // Restore last selected filter from local storage
+  const lastSelectedCategory = localStorage.getItem("selectedCategory");
+  if (lastSelectedCategory) {
+    categoryFilter.value = lastSelectedCategory;
+    filterQuotes(); // Apply the filter on page load
+  }
+}
+
