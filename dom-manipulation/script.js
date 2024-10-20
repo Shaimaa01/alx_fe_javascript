@@ -75,7 +75,7 @@ function showRandomQuote() {
   let randomQuotes = quotes[Math.floor(Math.random() * quotes.length)];
   let text = document.createElement("p");
   let category = document.createElement("p");
-  text.textContent = `Text: ${randomQuotes.text}`;
+  text.innerHTML = `Text: ${randomQuotes.text}`;
   category.textContent = `Category: ${randomQuotes.category}`;
   quoteDisplay.appendChild(category);
   quoteDisplay.appendChild(text);
