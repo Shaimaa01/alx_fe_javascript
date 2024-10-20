@@ -2,7 +2,7 @@ let quoteDisplay = document.getElementById("quoteDisplay");
 let newQuote = document.getElementById("newQuote");
 let newQuoteText;
 let newQuoteCategory;
-
+let arrayOfChoosenQuotes = [];
 const quotes = [
   {
     text: "The only limit to our realization of tomorrow is our doubts of today.",
@@ -70,31 +70,51 @@ const quotes = [
   },
 ];
 
+// Check and Load Saved Quotes from localStorage
+if (localStorage.getItem("quotes")) {
+  arrayOfChoosenQuotes = JSON.parse(localStorage.getItem("quotes"));
+  displaySavedQuotes(); // Display saved quotes on page load
+}
+
 // show random quotes
 function showRandomQuote() {
   let randomQuotes = quotes[Math.floor(Math.random() * quotes.length)];
+  let all = document.createElement("div");
   let text = document.createElement("p");
   let category = document.createElement("p");
   text.innerHTML = `Text: ${randomQuotes.text}`;
   category.textContent = `Category: ${randomQuotes.category}`;
-  quoteDisplay.appendChild(category);
-  quoteDisplay.appendChild(text);
+  all.appendChild(text);
+  all.appendChild(category);
+  quoteDisplay.appendChild(all);
+  // updata data in localstorage
+  arrayOfChoosenQuotes.push(randomQuotes);
+  addDataToLocalStorage();
 }
 
 // call showRandomQuote()
-newQuote.addEventListenera("click", function () {
+newQuote.addEventListener("click", function () {
   showRandomQuote();
 });
 
 // user add quotes
 function addQuote() {
   if (newQuoteText.value !== "" && newQuoteCategory.value !== "") {
+    let newQuoteObj = {
+      text: newQuoteText.value,
+      category: newQuoteCategory.value,
+    };
+    let all = document.createElement("div");
     let text = document.createElement("p");
     let category = document.createElement("p");
     text.textContent = `Text: ${newQuoteText.value}`;
     category.textContent = `Category: ${newQuoteCategory.value}`;
-    quoteDisplay.appendChild(category);
-    quoteDisplay.appendChild(text);
+    all.appendChild(text);
+    all.appendChild(category);
+    quoteDisplay.appendChild(all);
+    // updata data in localstorage
+    arrayOfChoosenQuotes.push(newQuoteObj);
+    addDataToLocalStorage();
     // clear input
     newQuoteText.value = "";
     newQuoteCategory.value = "";
@@ -126,3 +146,69 @@ function createAddQuoteForm() {
 }
 
 createAddQuoteForm();
+
+// 2. Display Saved Quotes Function
+function displaySavedQuotes() {
+  arrayOfChoosenQuotes.forEach((quote) => {
+    let all = document.createElement("div");
+    let text = document.createElement("p");
+    let category = document.createElement("p");
+
+    text.textContent = `Text: ${quote.text}`;
+    category.textContent = `Category: ${quote.category}`;
+
+    all.appendChild(text);
+    all.appendChild(category);
+    quoteDisplay.appendChild(all);
+  });
+}
+
+// add data to localStorage
+function addDataToLocalStorage() {
+  localStorage.setItem("quotes", JSON.stringify(arrayOfChoosenQuotes));
+}
+
+// 1. JSON Export Functionality
+document
+  .getElementById("exportQuotes")
+  .addEventListener("click", exportToJsonFile);
+
+function exportToJsonFile() {
+  const jsonString = JSON.stringify(arrayOfChoosenQuotes, null, 2); // Convert to formatted JSON
+  const blob = new Blob([jsonString], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quotes.json"; // File name for download
+  a.click();
+
+  URL.revokeObjectURL(url); // Clean up the URL object
+}
+
+// 2. JSON Import Functionality
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+
+  fileReader.onload = function (e) {
+    try {
+      const importedQuotes = JSON.parse(e.target.result);
+
+      if (!Array.isArray(importedQuotes)) {
+        alert("Invalid file format. Please upload a valid JSON file.");
+        return;
+      }
+
+      // Update the quotes array and save to localStorage
+      arrayOfChoosenQuotes.push(...importedQuotes);
+      addDataToLocalStorage(); // Save to localStorage
+
+      displaySavedQuotes(); // Refresh the displayed quotes
+      alert("Quotes imported successfully!");
+    } catch (error) {
+      alert("Error reading file: " + error.message);
+    }
+  };
+
+  fileReader.readAsText(event.target.files[0]);
+}
