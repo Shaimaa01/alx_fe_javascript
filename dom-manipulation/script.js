@@ -281,7 +281,7 @@ function populateCategories() {
 const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
 
 // Fetch quotes from the server periodically (every 30 seconds)
-setInterval(syncWithServer, 30000); // Sync every 30 seconds
+setInterval(syncQuotes, 30000); // Sync every 30 seconds
 
 // Function to fetch quotes from the server
 async function fetchQuotesFromServer() {
@@ -330,7 +330,7 @@ async function postQuoteToServer(quote) {
 }
 
 // Function to sync local quotes with the server
-async function syncWithServer() {
+async function syncQuotes() { // Changed function name to syncQuotes
   const serverQuotes = await fetchQuotesFromServer(); // Use the required function name
   const localQuotes = arrayOfChoosenQuotes || []; // Ensure localQuotes is initialized
 
