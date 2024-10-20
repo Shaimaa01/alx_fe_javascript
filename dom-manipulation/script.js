@@ -284,7 +284,7 @@ const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
 setInterval(syncWithServer, 30000); // Sync every 30 seconds
 
 // Function to fetch quotes from the server
-async function fetchServerQuotes() {
+async function fetchQuotesFromServer() {
   try {
     const response = await fetch(SERVER_URL);
     if (!response.ok) {
@@ -303,9 +303,35 @@ async function fetchServerQuotes() {
   }
 }
 
+// Function to post a new quote to the server
+async function postQuoteToServer(quote) {
+  try {
+    const response = await fetch(SERVER_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: quote.text, // Assuming 'title' is what you want to send
+        body: quote.text,  // Simulating the body as the text
+        category: quote.category, // Simulated category for mock data
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Quote posted successfully:", result);
+  } catch (error) {
+    console.error("Failed to post quote:", error);
+  }
+}
+
 // Function to sync local quotes with the server
 async function syncWithServer() {
-  const serverQuotes = await fetchQuotesFromServer(); // Updated function name
+  const serverQuotes = await fetchQuotesFromServer(); // Use the required function name
   const localQuotes = arrayOfChoosenQuotes || []; // Ensure localQuotes is initialized
 
   // Merge server quotes, giving priority to server data
@@ -328,3 +354,7 @@ function updateLocalQuotes(quotes) {
   arrayOfChoosenQuotes = quotes; // Update the in-memory variable
   localStorage.setItem("quotes", JSON.stringify(quotes)); // Optional: Update localStorage
 }
+
+// Example usage of posting a quote
+postQuoteToServer({ text: "This is a test quote.", category: "General" });
+
