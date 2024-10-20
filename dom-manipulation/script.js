@@ -305,7 +305,7 @@ async function fetchServerQuotes() {
 
 // Function to sync local quotes with the server
 async function syncWithServer() {
-  const serverQuotes = await fetchServerQuotes();
+  const serverQuotes = await fetchQuotesFromServer(); // Updated function name
   const localQuotes = arrayOfChoosenQuotes || []; // Ensure localQuotes is initialized
 
   // Merge server quotes, giving priority to server data
